@@ -12,5 +12,14 @@
 */
 
 Route::get('/', function () {
-    return view('frontend.index');
+    return view('frontend.home.index');
+});
+Route::get('/shop', function () {
+    return view('frontend.shop.index');
+});
+Route::get('/product', function () {
+    return view('frontend.product.index');
+});
+Route::get('/cart', function(){
+    return view('frontend.cart.index');
 });
