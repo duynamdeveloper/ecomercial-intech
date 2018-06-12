@@ -23,3 +23,12 @@ Route::get('/product', function () {
 Route::get('/cart', function(){
     return view('frontend.cart.index');
 });
+
+Route::group([
+    'prefix' => 'admin',
+    'as' => 'be.',
+    'namespace' => 'backend',
+    'middleware' => ['web'],
+], function(){
+    Route::resource('category','CategoryController');
+});
