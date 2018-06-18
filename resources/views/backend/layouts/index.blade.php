@@ -8,14 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Favicon icon -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+        <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <title>@yield('title','Administrator - VTSX')</title>
     <!-- Bootstrap Core CSS -->
-    <link href="{{ asset('ElaAdmin/css/lib/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <!-- Custom CSS -->
     <link href="{{ asset('ElaAdmin/css/helper.css') }}" rel="stylesheet">
     <link href="{{ asset('ElaAdmin/css/style.css') }}" rel="stylesheet">
+    <style>
+        textarea.form-control{
+            height: unset;
+        }
+        .alert{
+            color: #333;
+        }
+    </style>
     @yield('styles')
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:** -->
@@ -55,6 +64,13 @@
             <!-- End Bread crumb -->
             <!-- Container fluid  -->
             <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        @if (Session::has('message'))
+                            @include('backend.layouts.components.alert')
+                        @endif
+                    </div>
+                </div>
                 <!-- Start Page Content -->
                 <div class="row">
                     @yield('content')
@@ -73,7 +89,7 @@
     <script src="{{ asset('ElaAdmin/js/lib/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{{ asset('ElaAdmin/js/lib/bootstrap/js/popper.min.js') }}"></script>
-    <script src="{{ asset('ElaAdmin/js/lib/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="{{ asset('ElaAdmin/js/jquery.slimscroll.js') }}"></script>
     <!--Menu sidebar -->
@@ -82,6 +98,16 @@
     <script src="{{ asset('ElaAdmin/js/lib/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
     <!--Custom JavaScript -->
     <script src="{{ asset('ElaAdmin/js/custom.min.js') }}"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+    </script>
     @yield('scripts')
 </body>
 

@@ -1,7 +1,11 @@
-@extends('backend.layouts.index') @section('title','Tạo mới danh mục') @section('page-title','Tạo mới danh mục') @section('parent-breadcrumb','Danh
-mục sản phẩm') @section('child-breadcrumb','Tạo mới') @section('content')
+@extends('backend.layouts.index')
+@section('title','Tạo mới nhãn hiệu')
+@section('page-title','Tạo mới nhãn hiệu')
+@section('parent-breadcrumb','nhãn hiệu sản phẩm')
+@section('child-breadcrumb','Tạo mới')
+@section('content')
 <div class="col-lg-12">
-        <form method="post" enctype="multipart/form-data" action="{{ route('be.category.store') }}">
+        <form method="post" enctype="multipart/form-data" action="{{ route('be.manufacture.store') }}">
             @csrf
     <div class="card p-0">
         <div class="card-header">
@@ -26,24 +30,17 @@ mục sản phẩm') @section('child-breadcrumb','Tạo mới') @section('conten
             <div class="tab-content">
                 <div class="tab-pane active container pt-2" id="info">
                     <div class="form-group row">
-                        <label for="categoryname" class="col-sm-3 col-form-label text-right">Tên danh mục:</label>
+                        <label for="manufacturename" class="col-sm-3 col-form-label text-right">Tên nhãn hiệu:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="categoryname" name="categoryname" required>
+                            <input type="text" class="form-control" id="manufacturename" name="manufacturename" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="description" class="col-sm-3 col-form-label text-right">Mô tả</label>
+                        <label for="parent_id" class="col-sm-3 col-form-label text-right">Quốc gia</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" name="description" id="description" placeholder="Mô tả"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="parent_id" class="col-sm-3 col-form-label text-right">Danh mục cha</label>
-                        <div class="col-sm-8">
-                            <select class="form-control" name="parent_id">
-                                <option value="0">[None]</option>
-                                @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <select class="form-control" name="country_id">
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}" @if($country->country_code == 'VN') selected="true" @endif>{{ $country->country_name }} - {{ $country->country_code }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -57,40 +54,12 @@ mục sản phẩm') @section('child-breadcrumb','Tạo mới') @section('conten
                     <div class="form-group row">
                         <label for="display_order" class="col-sm-3 col-form-label text-right">Ưu tiên hiển thị
                             <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top"
-                                title="Điểm ưu tiên để sắp xếp thứ tự danh mục trên menu và trên trang chủ"></i>
+                                title="Điểm ưu tiên để sắp xếp thứ tự nhãn hiệu"></i>
                         </label>
                         <div class="col-sm-8">
                             <input type="number" class="form-control" name="display_order" id="display_order" value="1">
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label for="display_on_homepage" class="col-sm-3 col-form-label text-right">Hiển thị trên Trang chủ
-                            <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top"
-                                title="Hiện thị sản phẩm của danh mục này trên trang chủ"></i>
-                        </label>
-                        <div class="col-sm-8">
-                            <input type="checkbox" name="display_on_homepage" id="display_on_homepage" value="1">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="display_on_sidebar" class="col-sm-3 col-form-label text-right">Hiển thị trên Menu trái
-                            <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top"
-                                title="Hiện thị danh mục này trên menu trái"></i>
-                        </label>
-                        <div class="col-sm-8">
-                            <input type="checkbox" name="display_on_sidebar" id="display_on_sidebar" value="1">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="display_on_topbar" class="col-sm-3 col-form-label text-right">Hiển thị trên Menu Top
-                            <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top"
-                                title="Hiện thị danh mục này trên menu top"></i>
-                        </label>
-                        <div class="col-sm-8">
-                            <input type="checkbox" name="display_on_topbar" id="display_on_topbar" value="1">
-                        </div>
-                    </div>
-
                 </div>
                 <div class="tab-pane container pt-2" id="seo">
                         <div class="form-group row">
@@ -128,7 +97,7 @@ mục sản phẩm') @section('child-breadcrumb','Tạo mới') @section('conten
 </div>
 @endsection @section('scripts')
 <script>
-    $('#categoryFormTab a').on('click', function (e) {
+    $('#manufactureFormTab a').on('click', function (e) {
         e.preventDefault()
         $(this).tab('show')
     });

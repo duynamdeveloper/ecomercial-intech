@@ -19,13 +19,13 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->double('price')->nullable();
             $table->double('discount_percent')->default(0);
-            $table->double('discounted_price')->nullable();
+            $table->double('old_price')->nullable();
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->double('height')->default(0);
             $table->double('weight')->default(0);
             $table->double('width')->default(0);
-            $table->double('long')->default(0);
+            $table->double('length')->default(0);
             $table->string('image_1')->nullable();
             $table->string('thumb_image')->nullable();
             $table->string('image_2')->nullable();
