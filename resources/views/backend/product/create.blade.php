@@ -5,6 +5,7 @@
 @section('child-breadcrumb','Tạo mới')
 @section('styles')
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 @endsection
 @section('content')
 <div class="col-lg-12">
@@ -28,6 +29,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#seo">SEO</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#attribute">Thuộc tính</a>
                     </li>
                 </ul>
 
@@ -128,13 +132,25 @@
                                                 <input type="checkbox" name="is_available" id="is_available" value="1" checked="true">
                                             </div>
                                         </div>
+                                        <div class="form-group row">
+                                                <label for="is_available" class="col-sm-3 col-form-label text-right">Sản phẩm tương tự
+                                                    <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top" title="Hiển thị gợi ý những sản phẩm tương tự khi khách hàng xem sản phẩm này"></i>
+                                                </label>
+                                                <div class="col-sm-8">
+                                                    <select name="related_products[]" class="select-2 form-control" multiple="multiple">
+                                                        @foreach ($products as $a_product)
+                                                            <option value="{{ $a_product->id }}">{{ $a_product->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-header">
-                                        <span>Shipping</span>
+                                        <span>Thông số kỹ thuật</span>
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group-row">
@@ -165,6 +181,13 @@
                                                         </label>
                                                         <div class="col-sm-6">
                                                             <input type="number" class="form-control" name="length" id="length" value="0">
+                                                        </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                        <label for="warranty_period" class="col-sm-6 col-form-label text-right">Thời gian bảo hành (tháng)
+                                                        </label>
+                                                        <div class="col-sm-6">
+                                                            <input type="number" class="form-control" name="warranty_period" id="warranty_period" value="0">
                                                         </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -245,13 +268,16 @@
                         </div>
                         <div class="form-group row">
                             <label for="meta_anchor" class="col-sm-3 col-form-label text-right">SEO Friendly URL:
-                                <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top" title="Đường dẫn tới danh mục. VD: http://vattusanxuat.net/may-han-cong-nghiep, nếu bỏ trống, phần này sẽ được tự sinh dựa vào tên danh mục"></i>
+                                <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top" title="Đường dẫn tới sản phẩm. VD: http://vattusanxuat.net/san-pham/may-han-cong-nghiep, nếu bỏ trống, phần này sẽ được tự sinh dựa vào tên sản phẩm"></i>
                             </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control" name="meta_anchor">
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane container pt-2" id="attribute">
+                         <p>Sản phẩm cần được lưu lại trước khi bổ sung các thuộc tính</p>  
+                        </div>
                 </div>
             </div>
     </form>
@@ -261,6 +287,7 @@
 @section('scripts')
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <script>
 $('.summernote').summernote({
   height: 300,                 // set editor height
@@ -268,6 +295,7 @@ $('.summernote').summernote({
   maxHeight: null,             // set maximum height of editor
   focus: true                  // set focus to editable area after initializing summernote
 });
+$('.select-2').select2();
 </script>
 
 

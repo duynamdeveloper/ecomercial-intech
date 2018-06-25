@@ -9,6 +9,7 @@ use App\Eloquent\Category;
 use App\Eloquent\Manufacture;
 use App\Eloquent\Country;
 use App\Eloquent\Attribute;
+use App\Eloquent\AttributeValue;
 use Session;
 use Storage;
 
@@ -35,8 +36,8 @@ class ProductController extends Controller
         $countries = Country::all();
         $categories = Category::all();
         $manufactures = Manufacture::all();
-
-        return view('backend.product.create',compact('countries','categories','manufactures'));
+        $products = Product::all();
+        return view('backend.product.create',compact('countries','categories','manufactures','products'));
     }
 
     /**
@@ -70,12 +71,14 @@ class ProductController extends Controller
         $product->weight = $request->weight;
         $product->height = $request->height;
         $product->width = $request->width;
+        $product->warranty_period = $request->warranty_period;
         if(!empty($request->can_ship)){
             $product->can_ship = $request->can_ship;
         }
         if(!empty($request->free_ship)){
             $product->free_ship = $request->free_ship;
         }
+        
         $product->price = $request->price;
         $product->old_price = $request->old_price;
 
@@ -100,16 +103,21 @@ class ProductController extends Controller
             $meta_anchor = $meta_anchor.'.html';
         }
 
-        $product->meta_anchor = $meta_anchor;
+        $product->meta_anchor = strtolower($meta_anchor);
 
         if($product->save()){
             Session::flash('message','Tạo mới sản phẩm thành công!');
             Session::flash('alert-class','alert-success');
+            if(!empty($request->related_products))
+            {
+            $product->related_products()->attach($request->related_products);
+            }
         }else{
             Session::flash('message','Error! Không thể thêm được sản phẩm này!');
             Session::flash('alert-class','alert-danger');
            
         }
+        
         if($request->has('save-continue')){
             return redirect()->route('be.product.edit',$product->id);
         }
@@ -127,8 +135,10 @@ class ProductController extends Controller
         $countries = Country::all();
         $categories = Category::all();
         $manufactures = Manufacture::all();
-        $product = Product::findOrFail($id);
-        return view('backend.product.edit', compact('countries','manufactures','categories','product'));
+        $attributes = Attribute::all();
+        $product = Product::where('id',$id)->with('attribute_values.attribute')->first();
+        $products = Product::all();
+        return view('backend.product.edit', compact('countries','manufactures','attributes','categories','product','products','related_products'));
     }
 
     /**
@@ -139,11 +149,13 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $products = Product::all();
         $countries = Country::all();
         $categories = Category::all();
         $manufactures = Manufacture::all();
-        $product = Product::findOrFail($id);
-        return view('backend.product.edit', compact('countries','manufactures','categories','product'));
+        $attributes = Attribute::all();
+        $product = Product::where('id',$id)->with('attribute_values.attribute')->first();
+        return view('backend.product.edit', compact('countries','manufactures','attributes','categories','product','products','related_products'));
     }
 
     /**
@@ -156,7 +168,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        $product->name = title_case(trim($request->product_name));
+        $product->name = trim($request->product_name);
         $product->sku = trim($request->sku);
         $product->short_description = trim($request->short_description);
         $product->description = trim($request->description);
@@ -179,6 +191,7 @@ class ProductController extends Controller
         $product->weight = $request->weight;
         $product->height = $request->height;
         $product->width = $request->width;
+        $product->warranty_period = $request->warranty_period;
         if(!empty($request->can_ship)){
             $product->can_ship = $request->can_ship;
         }
@@ -202,17 +215,20 @@ class ProductController extends Controller
         }
         $meta_anchor = str_replace('html','',$meta_anchor);
         $meta_anchor = str_slug($meta_anchor,'-','en');
-        $meta_anchor = $meta_anchor.'.html';
-        if(count(Product::where('meta_anchor',$meta_anchor)->where('id','<>',$id)->get())>0){
-            $meta_anchor = str_replace('.html','',$meta_anchor);
-            
-            $meta_anchor = $meta_anchor.'-'.str_random(5);
-            $meta_anchor = $meta_anchor.'.html';    
+        if(count(Product::where('meta_anchor',$meta_anchor.'.html')->where('id','<>',$id)->get())>0){
+            $meta_anchor = $meta_anchor.'-'.str_random(5);  
         }
-        $product->meta_anchor = $meta_anchor;
+        $meta_anchor = $meta_anchor.'.html'; 
+        $product->meta_anchor = strtolower($meta_anchor);
         if($product->update()){
             Session::flash('message','Cập nhật sản phẩm thành công!');
             Session::flash('alert-class','alert-success');
+            if(!empty($request->related_products))
+            {
+                $product->related_products()->sync($request->related_products);
+            }else{
+                $product->related_products()->detach();
+            }
         }else{
             Session::flash('message','Error! Không thể cập nhật được sản phẩm này!');
             Session::flash('alert-class','alert-danger');          
@@ -236,5 +252,56 @@ class ProductController extends Controller
         Session::flash('message','Đã xóa sản phẩm');
         Session::flash('alert-class','alert-success');
         return redirect()->route('be.product.index');
+    }
+    public function getAttributes(Request $request)
+    {
+        $product_id = $request->product_id;
+        $attributes = AttributeValue::where('product_id',$product_id)->with(['attribute'])->get();
+        return response()->json(['status' => true, 'data' => $attributes]);
+    }
+    public function getSingleAttribte(Request $request){
+        $att_id = $request->att_id;
+        $attribute_value = AttributeValue::where('id',$att_id)->with('attribute')->first();
+        return response()->json(['status' => true, 'message' => 'Thành công!', 'data' => $attribute_value]);
+    }
+    public function addAttribute(Request $request){
+        $product_id = $request->product_id;
+        $att_id = $request->att_id;
+        $att_value = $request->att_value;
+        $att_display_order = $request->att_display_order;
+
+        $attribute_value = new AttributeValue();
+        $attribute_value->attribute_id = $att_id;
+        $attribute_value->value = $att_value;
+        $attribute_value->product_id = $product_id;
+        $attribute_value->display_order = $att_display_order;
+        if($attribute_value->save())
+        {
+            return response()->json(['status' => true, 'message' => 'Thêm mới thành công!']);
+        }else{
+            return response()->json(['status' => false, 'message' => 'Thêm mới thất bại!']);
+        }
+    }
+    public function updateAttribute(Request $request)
+    {
+        $att_value_id = $request->att_value_id;
+        $att_value = AttributeValue::findOrFail($att_value_id);
+        $att_value->value = $request->att_value;
+        $att_value->display_order = $request->display_order;
+        if($att_value->update())
+        {
+            return response()->json(['status' => true,'message' => 'Cập nhật thành công!']);
+        }else{
+            return response()->json(['status' => false,'message' => 'Cập nhật thất bại!']);
+        }
+    }
+    public function destroyAttribute(Request $request)
+    {
+        $att_value = AttributeValue::findOrFail($request->att_value_id);
+        if($att_value->delete()){
+            return response()->json(['status' => true,'message' => 'Xóa thành công!']);
+        }else{
+            return response()->json(['status' => false,'message' => 'Xóa thất bại!']);
+        }
     }
 }

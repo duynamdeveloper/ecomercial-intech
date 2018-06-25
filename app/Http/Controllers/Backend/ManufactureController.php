@@ -42,7 +42,7 @@ class ManufactureController extends Controller
     public function store(Request $request)
     {
         $manufacture = new Manufacture();
-        $manufacture->name = title_case(trim($request->manufacturename));
+        $manufacture->name = trim($request->manufacturename);
         $manufacture->country_id = $request->country_id;
         if(!empty($request->image)){
             $manufacture->image = $request->image->storeAs('app/public/images/manufacture/',($manufacture->name).date('dmYhis'  ));
@@ -62,13 +62,13 @@ class ManufactureController extends Controller
         }else{
             $meta_anchor = trim($request->meta_anchor);
         }
+        $meta_anchor = str_replace('html','',$meta_anchor);
         $meta_anchor = str_slug($meta_anchor,'-','en');
-        if(count(Manufacture::where('meta_anchor',$meta_anchor)->get())>0){
-            $last_id = Manufacture::max('id');
-            $last_id++;
-            $meta_anchor = $meta_anchor.'-'.$last_id;
+        if(count(Manufacture::where('meta_anchor',$meta_anchor.'.html')->get())>0){
+            $meta_anchor = $meta_anchor.'-'.str_random(5);  
         }
-        $manufacture->meta_anchor = $meta_anchor.'.html';
+        $meta_anchor = $meta_anchor.'.html';
+        $manufacture->meta_anchor = strtolower($meta_anchor);
         $manufacture->save();
         Session::flash('message','Tạo mới nhãn hiệu thành công!');
         Session::flash('alert-class','alert-success');
@@ -117,7 +117,7 @@ class ManufactureController extends Controller
     public function update(Request $request, $id)
     {
         $manufacture = Manufacture::findOrFail($id);
-        $manufacture->name = title_case(trim($request->manufacturename));
+        $manufacture->name = trim($request->manufacturename);
         $manufacture->country_id = $request->country_id;
         if(!empty($request->image)){
             Storage::delete($manufacture->image);
@@ -140,11 +140,11 @@ class ManufactureController extends Controller
         }
         $meta_anchor = str_replace('html','',$meta_anchor);
         $meta_anchor = str_slug($meta_anchor,'-','en');
-        if(count(Manufacture::where('meta_anchor',$meta_anchor.'.html')->get())>0){
+        if(count(Manufacture::where('meta_anchor',$meta_anchor.'.html')->where('id','<>',$id)->get())>0){
             $meta_anchor = $meta_anchor.'-'.str_random(5);  
         }
         $meta_anchor = $meta_anchor.'.html';
-        $manufacture->meta_anchor = $meta_anchor;
+        $manufacture->meta_anchor = strtolower($meta_anchor);
         $manufacture->save();
         Session::flash('message','Cập nhật nhãn hiệu thành công!');
         Session::flash('alert-class','alert-success');

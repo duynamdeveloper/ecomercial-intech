@@ -41,7 +41,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $category = new Category();
-        $category->name = title_case(trim($request->categoryname));
+        $category->name = trim($request->categoryname);
         $category->description = trim($request->description);
         $category->parent_id = $request->parent_id;
         if(!empty($request->image)){
@@ -121,7 +121,7 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-        $category->name = title_case(trim($request->categoryname));
+        $category->name =trim($request->categoryname);
         $category->description = trim($request->description);
         $category->parent_id = $request->parent_id;
         if(!empty($request->image)){

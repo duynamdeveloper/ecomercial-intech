@@ -19,6 +19,7 @@
                         <th>#</th>
                         <th>SKU</th>
                         <th>Tên</th>
+                        <th>Danh mục</th>
                         <th>Hình ảnh</th>
                         <th>Slug <i class="fa fa-question-circle text-warning" data-toggle="tooltip" data-placement="top"
                             title="Đường dẫn tới sản phẩm. VD: http://vattusanxuat.net/san-pham/slug"></i></th>
@@ -32,7 +33,7 @@
                             <td>{{ $product->sku }}</td>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category->name }}</td>
-                            <td><img src="{{ Storage::url($product->image) }}" width="75px" height="75px"></td>
+                            <td><img src="{{ Storage::url($product->image_1) }}" width="75px" height="75px"></td>
                             <td>{{ $product->meta_anchor }}</td>
                             <td>{{ $product->display_order }}</td>
 

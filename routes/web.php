@@ -33,4 +33,13 @@ Route::group([
     Route::resource('category','CategoryController');
     Route::resource('manufacture','ManufactureController');
     Route::resource('product','ProductController');
+    Route::resource('attribute','AttributeController');
+    Route::resource('customer','CustomerController');
+    Route::resource('order','CustomerController');
+    //route for ajax to manage product attribute
+    Route::post('product/attribute',['as' => 'product.attribute.get','uses' => 'ProductController@getAttributes']);
+    Route::post('product/attribute/add',['as' => 'product.attribute.add','uses' => 'ProductController@addAttribute']);
+    Route::post('product/attribute/update',['as' => 'product.attribute.update','uses' => 'ProductController@updateAttribute']);
+    Route::post('product/attribute/destroy',['as' => 'product.attribute.destroy','uses' => 'ProductController@destroyAttribute']);
+    Route::post('product/attribute/get',['as' => 'product.attribute.getsingle','uses' => 'ProductController@getSingleAttribute']);
 });
